@@ -14,7 +14,7 @@ def driver():
     yield driver
     driver.quit()
 
-def test_firt_order(driver):
+def test_first_order(driver):
     username = driver.find_element(By.ID, "user-name")
     username.send_keys("standard_user")
 
@@ -29,23 +29,29 @@ def test_firt_order(driver):
     logo = driver.find_element(By.CLASS_NAME, "app_logo").text
     assert logo == "Swag Labs"
 
-    item1 = driver.find_element(By.ID, "add-to-cart-sauce-labs-backpack")
-    item1.click()
+    products=driver.find_elements(By.XPATH, '//button[contains(@data-test, "add-to-cart")]')
 
-    item2 = driver.find_element(By.ID, "add-to-cart-sauce-labs-bike-light")
-    item2.click()
+    for product in products:
+        sleep(1)
+        product.click()
 
-    item3 = driver.find_element(By.ID, "add-to-cart-sauce-labs-bolt-t-shirt")
-    item3.click()
+    # item1 = driver.find_element(By.ID, "add-to-cart-sauce-labs-backpack")
+    # item1.click()
 
-    item4 = driver.find_element(By.ID, "add-to-cart-sauce-labs-fleece-jacket")
-    item4.click()
+    # item2 = driver.find_element(By.ID, "add-to-cart-sauce-labs-bike-light")
+    # item2.click()
 
-    item5 = driver.find_element(By.ID, "add-to-cart-sauce-labs-onesie")
-    item5.click()
+    # item3 = driver.find_element(By.ID, "add-to-cart-sauce-labs-bolt-t-shirt")
+    # item3.click()
 
-    item6 = driver.find_element(By.ID, "add-to-cart-test.allthethings()-t-shirt-(red)")
-    item6.click()
+    # item4 = driver.find_element(By.ID, "add-to-cart-sauce-labs-fleece-jacket")
+    # item4.click()
+
+    # item5 = driver.find_element(By.ID, "add-to-cart-sauce-labs-onesie")
+    # item5.click()
+
+    # item6 = driver.find_element(By.ID, "add-to-cart-test.allthethings()-t-shirt-(red)")
+    # item6.click()
 
     sleep(2)
 
@@ -271,6 +277,7 @@ def test_checkout(driver):
 # - Verificar o valor do carrinho igual a 0
     
 def test_empty_cart(driver):
+
     username = driver.find_element(By.XPATH, '//input[@id="user-name"]')
     username.send_keys("standard_user")
 
@@ -344,3 +351,41 @@ def test_empty_cart(driver):
 
     empty_cart = driver.find_element(By.XPATH, '//div[@class="summary_info_label summary_total_label"]').text
     assert empty_cart == "Total: $0.00"
+
+#Caso 05
+
+# - Logar no site com o usuário standard
+# - Ordenar por menor preço
+# - Conferir se os preços foram ordenados corretamente
+
+def test_sorted_prices(driver):
+    username = driver.find_element(By.ID, "user-name")
+    username.send_keys("standard_user")
+
+    password = driver.find_element(By.ID, "password")
+    password.send_keys("secret_sauce")
+
+    login = driver.find_element(By.ID, "login-button")
+    login.click()
+
+    sleep(1)
+
+    logo = driver.find_element(By.CLASS_NAME, "app_logo").text
+    assert logo == "Swag Labs" 
+
+    Select(driver.find_element(By.CLASS_NAME,"product_sort_container")).select_by_visible_text("Price (low to high)")
+
+    sleep(5)
+
+    produts=driver.find_elements(By.CLASS_NAME, "inventory_item_price")
+
+    prices = []
+
+    for product in produts:
+        price=product.text
+        price=price.replace("$","")
+        prices.append(float(price))
+
+    sorted_price = sorted(prices)
+
+    assert sorted_price == prices
